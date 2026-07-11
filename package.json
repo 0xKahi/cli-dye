@@ -1,0 +1,51 @@
+{
+  "name": "@0xkahi/cli-dye",
+  "version": "0.0.0",
+  "private": false,
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "author": "0xKahi",
+  "keywords": [
+    "ansi",
+    "cli",
+    "color",
+    "colors",
+    "console",
+    "terminal"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/0xKahi/cli-dye.git"
+  },
+  "scripts": {
+    "biome": "biome check ./src ./test",
+    "lint": "bun biome",
+    "lint:fix": "bun biome --write",
+    "test": "bun test",
+    "type-check": "tsc --noEmit",
+    "check": "bun run lint && bun run type-check",
+    "build": "rm -rf dist && bun build ./src/index.ts --outdir ./dist --target node && tsc --project tsconfig.build.json"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.15",
+    "@changesets/cli": "^2.31.0",
+    "@types/bun": "latest",
+    "@types/node": "^24.0.0",
+    "bun-types": "latest",
+    "typescript": "^5"
+  }
+}
