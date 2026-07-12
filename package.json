@@ -1,6 +1,6 @@
 {
   "name": "@0xkahi/cli-dye",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": false,
   "description": "fast nodejs cli library for formatting terminal text",
   "type": "module",
