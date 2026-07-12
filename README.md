@@ -161,7 +161,6 @@ Dye includes TypeScript declarations and exports its public color and builder ty
 ```ts
 import { dye } from '@0xkahi/cli-dye';
 import type {
-  Dye,
   DyeColor,
   ColorizeOptions,
   HexColor,
