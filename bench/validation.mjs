@@ -16,5 +16,10 @@ export function validateAdapters() {
     }
     validateOutput(adapter.name, 'stacked', adapter.stacked(stackedPlainText), stackedPlainText);
     validateOutput(adapter.name, 'nested', adapter.nested(), nestedPlainText);
+    validateOutput(adapter.name, 'nested restoration', adapter.nestedRestoration(), 'inner after');
+    if (adapter.construct !== undefined && adapter.reusable !== undefined) {
+      assert.equal(typeof adapter.construct(), 'function', `${adapter.name} construct must return a callable style`);
+      validateOutput(adapter.name, 'reusable', adapter.reusable(stackedPlainText), stackedPlainText);
+    }
   }
 }

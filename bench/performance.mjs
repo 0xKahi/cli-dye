@@ -14,6 +14,10 @@ function consume(value) {
   sink = (sink + value.length) >>> 0;
 }
 
+function consumeStyle(value) {
+  sink = (sink + (typeof value === 'function' ? 1 : 0)) >>> 0;
+}
+
 const workloads = [
   {
     name: 'Shared foreground colors (9 outputs/op)',
@@ -33,13 +37,39 @@ const workloads = [
       consume(adapter.nested());
     },
   },
+  {
+    name: 'Immediate foreground formatting (1 output/op)',
+    run(adapter) {
+      consume(adapter.color('red', sampleText));
+    },
+  },
+  {
+    name: 'Style construction only (1 builder/op)',
+    supports: adapter => adapter.construct !== undefined,
+    run(adapter) {
+      consumeStyle(adapter.construct());
+    },
+  },
+  {
+    name: 'Reusable stacked style (1 output/op)',
+    supports: adapter => adapter.reusable !== undefined,
+    run(adapter) {
+      consume(adapter.reusable(stackedPlainText));
+    },
+  },
+  {
+    name: 'Nested restoration (1 output/op)',
+    run(adapter) {
+      consume(adapter.nestedRestoration());
+    },
+  },
 ];
 
 for (const workload of workloads) {
   console.log(`\n## ${workload.name}`);
   const bench = new Bench({ warmupTime: 250, time: 1000 });
   for (const adapter of adapters) {
-    bench.add(adapter.name, () => workload.run(adapter));
+    if (workload.supports?.(adapter) ?? true) bench.add(adapter.name, () => workload.run(adapter));
   }
   await bench.run();
   console.table(bench.table());

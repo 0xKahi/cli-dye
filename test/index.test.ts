@@ -25,6 +25,16 @@ describe('modifiers and builders', () => {
     expect(dye.bold().dim('text')).toBe(`${esc}1m${esc}2mtext${esc}22m${esc}22m`);
   });
 
+  test('keeps reusable builder branches independent', () => {
+    dye.setEnabled(true);
+    const base = dye.bold();
+    const italic = base.italic();
+    const underlined = base.underline();
+    expect(base('base')).toBe(`${esc}1mbase${esc}22m`);
+    expect(italic('italic')).toBe(`${esc}1m${esc}3mitalic${esc}23m${esc}22m`);
+    expect(underlined('underline')).toBe(`${esc}1m${esc}4munderline${esc}24m${esc}22m`);
+  });
+
   test('restores all outer blocks after a nested shared close', () => {
     dye.setEnabled(true);
     const inner = dye.bold('inner');
@@ -56,7 +66,26 @@ describe('colors', () => {
   test('supports reusable color and modifier builders', () => {
     dye.setEnabled(true);
     const style = dye.colorize({ fg: 'red', bg: 'blue' }).bold().underline();
-    expect(style('text')).toBe(`${esc}31m${esc}44m${esc}1m${esc}4mtext${esc}24m${esc}22m${esc}49m${esc}39m`);
+    const expected = `${esc}31m${esc}44m${esc}1m${esc}4mtext${esc}24m${esc}22m${esc}49m${esc}39m`;
+    expect(style('text')).toBe(expected);
+    expect(dye.colorize({ fg: 'red', bg: 'blue' }).bold().underline('text')).toBe(expected);
+    expect(typeof style('text')).toBe('string');
+  });
+
+  test('keeps immediate and reusable named and truecolor output equivalent', () => {
+    dye.setEnabled(true);
+    const options = { fg: dye.hex('#ed7892'), bg: 'blue' } as const;
+    expect(dye.colorize('text', options)).toBe(dye.colorize(options)('text'));
+    expect(dye.colorize('text', { fg: 'red', bg: 'brightWhite' })).toBe(dye.colorize({ fg: 'red', bg: 'brightWhite' })('text'));
+  });
+
+  test('restores nested immediate and reusable foreground and background colors', () => {
+    dye.setEnabled(true);
+    const inner = dye.colorize('inner', { fg: 'red', bg: 'blue' });
+    const immediate = dye.colorize(`${inner} after`, { fg: 'red', bg: 'blue' });
+    const reusable = dye.colorize({ fg: 'red', bg: 'blue' })(`${inner} after`);
+    expect(immediate).toBe(reusable);
+    expect(immediate).toContain(`${esc}49m${esc}44m${esc}39m${esc}31m after`);
   });
 
   test('does nothing when no colors are selected', () => {
