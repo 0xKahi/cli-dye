@@ -50,6 +50,6 @@
     "@types/bun": "latest",
     "@types/node": "^24.0.0",
     "bun-types": "latest",
-    "typescript": "^5"
+    "typescript": "^7"
   }
 }
